@@ -1,20 +1,107 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="color-scheme" content="light"><meta name="robots" content="noindex,nofollow"><title>Little Mississauga · Continuous map candidate</title><meta name="description" content="Local continuous-map candidate with actual Mississauga geography. Artwork acceptance is held; City Centre is a checkpoint, not finished citywide artwork."><link rel="icon" href="favicon.svg"><link rel="stylesheet" href="style.css"></head>
-<body><a class="skip" href="#search">Skip to place search and map data</a><main id="app">
-<canvas id="map" tabindex="0" aria-label="One continuous geographic Mississauga canvas. Drag or pinch to explore, scroll or use plus and minus to zoom. Arrow keys pan; Home fits the city. Place and overlay search provides a keyboard-accessible alternative."></canvas>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="color-scheme" content="light"><meta name="robots" content="noindex,nofollow"><title>Little Mississauga · An RCT3-style map of the whole city</title><meta name="description" content="An RCT3-style isometric map of all of Mississauga, built from real open data and a fine-tuned image model. Day, night, weather and simulated traffic.">
+<meta property="og:title" content="Little Mississauga">
+<meta property="og:description" content="An RCT3-style isometric map of all of Mississauga, built from real open data and a fine-tuned image model.">
+<meta property="og:image" content="https://sauga.mohameda.li/art/social-preview.jpg">
+<meta name="twitter:card" content="summary_large_image"><link rel="icon" href="favicon.svg"><link rel="stylesheet" href="style.css"></head>
+<body>
+<a class="skip" href="#search">Skip to search</a>
+<main id="app">
+<canvas id="map" tabindex="0" aria-label="Map of Mississauga. Drag or pinch to explore, scroll or use plus and minus to zoom. Arrow keys pan; Home fits the city."></canvas>
 <div id="map-tooltip" role="tooltip" hidden></div>
-<header class="brand glass"><span class="brand-mark" aria-hidden="true">m<span>·</span></span><div><h1>Little Mississauga</h1><p>One city. A little wandering.</p></div><button id="about-button" class="icon" aria-label="Sources and limits">i</button></header>
-<section class="search-box glass" aria-label="Find places and activities"><div class="search-row"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Find a place, park or programme…" aria-label="Search places parks facilities and programmes" autocomplete="off"><kbd>/</kbd><button id="search-clear" aria-label="Clear search" hidden>×</button></div><div class="search-chips"><button id="list-places">Places & map data</button><button id="browse-button">All programmes</button></div><div id="search-results" class="results" hidden></div></section>
-<section class="clock glass" aria-label="Toronto local time and lighting"><div class="clock-heading"><span id="clock-time">Toronto local time</span><span id="clock-source">LIVE · TORONTO</span></div><div class="clock-modes" role="group" aria-label="Lighting mode"><button data-mode="auto" aria-pressed="true">Automatic</button><button data-mode="day" aria-pressed="false">Day</button><button data-mode="night" aria-pressed="false">Night</button><button id="preview-toggle" aria-expanded="false">Preview time</button></div><div id="time-preview" hidden><label for="preview-hour">Local hour <output id="preview-label"></output></label><input id="preview-hour" type="range" min="0" max="23.75" step="0.25" value="21.5"><button id="clock-live">Return to actual Toronto time</button></div><p id="lighting-status">No accepted artwork or registered emission mask loaded.</p></section>
-<details id="layers" class="layers glass"><summary>Map layers <span id="layer-summary">Parks · cycling</span></summary><div class="layer-options"><label id="model-strength-control" hidden>Reviewed model strength <select id="model-strength" aria-label="Choose an actually rendered model strength"></select></label><label><input type="checkbox" data-layer="places" checked><i class="dot activity"></i> Programme venues / selected places</label><label><input type="checkbox" data-layer="parks" checked><i class="area context"></i> Park boundaries</label><label><input type="checkbox" data-layer="natural"><i class="area natural"></i> Natural areas · 2021</label><label><input type="checkbox" data-layer="cycling-existing" checked><i class="line activity"></i> Existing cycling</label><label><input type="checkbox" data-layer="cycling-proposed"><i class="line proposed"></i> Proposed cycling · not built</label><label><input type="checkbox" data-layer="facilities"><i class="dot facility"></i> Facility / POI records · not bookability</label><label><input id="texture" type="checkbox">Pattern overlay fills for accessibility</label><label><input id="motion-toggle" type="checkbox" disabled aria-describedby="motion-status">Simulated moving cars</label><p id="motion-status">Cars withheld until same-frame roads, heights and visibility are reviewed.</p><label><input id="weather-toggle" type="checkbox" checked aria-describedby="weather-status">Current weather atmosphere</label><p id="weather-status">Loading fixed-Mississauga weather estimate…</p><p><a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> · current model estimate, not a live observation or safety forecast. Fixed city coordinates, no location tracking.</p><button id="weather-refresh">Refresh weather estimate</button><button id="map-data">Search visible-layer records</button><p>Access and current closures unknown. Natural linkages are not trails. Pedestrian-trail publication is held.</p></div></details>
-<div id="loading" role="status">Opening the continuous geographic canvas…</div>
-<section id="coverage" class="coverage glass" aria-label="Artwork coverage"><span class="eyebrow">LOCAL CANDIDATE · NOT DEPLOYED</span><h2 id="coverage-title">One continuous city canvas</h2><p id="coverage-note">Citywide source geography, not completed citywide artwork.</p><button id="checkpoint">City Centre checkpoint</button><button id="fit-city">Whole Mississauga</button><button id="retry-art" hidden>Retry failed assets</button></section>
-<div class="map-controls glass" aria-label="Map navigation"><span id="north" title="Fixed geographic camera: north points up and right">N ↗</span><button id="zoom-in" aria-label="Zoom in">+</button><button id="zoom-out" aria-label="Zoom out">−</button><button id="fit" aria-label="Fit whole city">⌂</button></div>
-<div class="legend glass" aria-label="Selected place categories"><span><i class="marker activity">●</i> Programme venue</span><span><i class="marker hotspot">◆</i> Hotspot</span><span><i class="marker context">■</i> Landscape / context</span></div>
-<nav class="quick-places glass" aria-label="Featured geographic destinations"><button data-featured="hotspot-city-hall">City Hall</button><button data-featured="hotspot-square-one">Square One</button><button data-featured="hotspot-ridgeway-plaza">Ridgeway</button><button data-featured="context-rattray-marsh">Rattray Marsh</button><button data-featured="activity-active-center-240">Clarkson</button><button data-featured="activity-active-center-408">Meadowvale</button></nav>
-<aside id="place-panel" class="glass drawer" aria-label="Place details and official programmes" hidden tabindex="-1"><div class="panel-head"><span class="eyebrow">A REAL PLACE. A REAL STARTING POINT.</span><button id="close-place" class="icon" aria-label="Close place details">×</button></div><div id="place-content"></div></aside>
-<section id="browse-panel" class="glass drawer wide" aria-label="Browse official programme sample" hidden><div class="panel-head"><h2>Find your next thing</h2><button id="close-browse" class="icon" aria-label="Close programme browser">×</button></div><p class="sample-note">Official programme snapshot: November 8, 2026. Not live availability. Virtual and unmapped venues remain in this list.</p><input id="programme-search" type="search" placeholder="Search saved programmes…" aria-label="Filter programmes by title or venue"><div class="filter-row"><select id="schedule-filter" aria-label="Programme schedule filter"><option value="all">Any schedule evidence</option><option value="known">Captured schedule</option><option value="future">Starts on/after today</option></select><select id="fee-filter" aria-label="Programme fee filter"><option value="all">Any fee evidence</option><option value="known">Known amount only</option><option value="unknown">Fee not captured</option></select></div><div id="programme-count" role="status"></div><div id="programme-list"></div></section>
-<section id="data-panel" class="glass drawer wide" aria-label="Accessible map data list" hidden><div class="panel-head"><h2>Places & map data</h2><button id="close-data" class="icon" aria-label="Close map data">×</button></div><p class="sample-note">A searchable list alternative to the map. Source records remain separate; no inferred route connections or duplicate-site merges.</p><input id="data-search" type="search" placeholder="Filter map records…" aria-label="Filter map records"><select id="data-category" aria-label="Map record category"><option value="places">Selected places · 77</option><option value="parks">Park boundaries · 718</option><option value="natural">Natural areas · dated 2021</option><option value="cycling-existing">Existing cycling components</option><option value="cycling-proposed">Proposed cycling components · not built</option><option value="facilities">Facility / POI records · 3,296</option></select><p id="data-count" role="status"></p><div id="data-list"></div><button id="data-more" hidden>Show next 80 records</button></section>
-<footer><span id="map-credit">Actual city boundary · fixed 30° / 45° geographic projection</span><span id="scale-label"></span><button id="source-button">Sources & limits</button></footer><div id="announcement" class="sr-only" role="status" aria-live="polite"></div></main>
-<dialog id="info-dialog"><div class="panel-head"><span class="eyebrow">BEHIND THE MINIATURE</span><button id="close-info" class="icon" aria-label="Close information">×</button></div><div id="info-content"></div></dialog>
+
+<header class="topbar glass">
+ <div class="brand">
+  <span class="brand-mark" aria-hidden="true">m<span>·</span></span>
+  <div><h1>Little Mississauga</h1><p>The whole city, in miniature</p></div>
+ </div>
+ <section class="search-box" aria-label="Find places and activities">
+  <div class="search-row">
+   <span aria-hidden="true">⌕</span>
+   <input id="search" type="search" placeholder="Search places, parks, programmes" aria-label="Search places, parks, facilities and programmes" autocomplete="off">
+   <kbd>/</kbd>
+   <button id="search-clear" aria-label="Clear search" hidden>×</button>
+  </div>
+  <div id="search-results" class="results" hidden></div>
+ </section>
+ <div class="search-chips">
+  <button id="browse-button">Programmes</button>
+  <button id="list-places">Places list</button>
+ </div>
+</header>
+
+<nav class="toolbar" aria-label="Time, layers and about">
+ <button id="clock-chip" class="chip glass" aria-expanded="false" aria-controls="clock-panel"><span id="clock-time">--:--</span><span id="chip-weather"></span></button>
+ <details id="layers" class="layers">
+  <summary class="chip glass">Layers <span id="layer-summary"></span></summary>
+  <div class="layer-options glass">
+   <label id="model-strength-control" hidden>Model strength <select id="model-strength" aria-label="Model strength"></select></label>
+   <label><input type="checkbox" data-layer="places" checked><i class="dot activity"></i> Places &amp; programme venues</label>
+   <label><input type="checkbox" data-layer="parks"><i class="area context"></i> Park boundaries</label>
+   <label><input type="checkbox" data-layer="natural"><i class="area natural"></i> Natural areas (2021)</label>
+   <label><input type="checkbox" data-layer="cycling-existing"><i class="line activity"></i> Cycling routes</label>
+   <label><input type="checkbox" data-layer="cycling-proposed"><i class="line proposed"></i> Planned cycling</label>
+   <label><input type="checkbox" data-layer="facilities"><i class="dot facility"></i> City facilities</label>
+   <hr>
+   <label><input id="motion-toggle" type="checkbox" checked aria-describedby="motion-status"> Traffic</label>
+   <p id="motion-status"></p>
+   <label><input id="weather-toggle" type="checkbox" checked aria-describedby="weather-status"> Live weather</label>
+   <p id="weather-status"></p>
+   <label><input id="texture" type="checkbox"> Patterned fills (accessibility)</label>
+   <div class="layer-actions"><button id="weather-refresh">Refresh weather</button><button id="map-data">List visible data</button></div>
+  </div>
+ </details>
+ <button id="about-button" class="chip glass icon-chip" aria-label="About this map">i</button>
+</nav>
+
+<section id="clock-panel" class="clock glass" aria-label="Time of day" hidden>
+ <div class="clock-heading"><span>Time of day</span><span id="clock-source">LIVE · TORONTO</span></div>
+ <div class="clock-modes" role="group" aria-label="Lighting mode">
+  <button data-mode="auto" aria-pressed="true">Live</button>
+  <button data-mode="day" aria-pressed="false">Day</button>
+  <button data-mode="night" aria-pressed="false">Night</button>
+  <button id="preview-toggle" aria-expanded="false">Pick a time</button>
+ </div>
+ <div id="time-preview" hidden>
+  <label for="preview-hour">Hour <output id="preview-label"></output></label>
+  <input id="preview-hour" type="range" min="0" max="23.75" step="0.25" value="21.5">
+  <button id="clock-live">Back to live time</button>
+ </div>
+ <p id="lighting-status"></p>
+</section>
+
+<div id="loading" role="status">Loading Mississauga…</div>
+
+<section id="coverage" class="coverage" aria-hidden="true" hidden>
+ <span class="eyebrow"></span><h2 id="coverage-title"></h2><p id="coverage-note"></p>
+ <button id="checkpoint"></button><button id="fit-city"></button>
+</section>
+<button id="retry-art" class="retry glass" hidden>Some artwork failed to load · Retry</button>
+
+<div class="map-controls glass" aria-label="Map navigation">
+ <button id="zoom-in" aria-label="Zoom in">+</button>
+ <button id="zoom-out" aria-label="Zoom out">−</button>
+ <button id="fit" aria-label="Show the whole city">⌂</button>
+ <span id="north" title="North points up and to the right">N↗</span>
+</div>
+
+<nav class="quick-places" aria-label="Jump to">
+ <button data-featured="hotspot-city-hall">City Hall</button>
+ <button data-featured="hotspot-square-one">Square One</button>
+ <button data-featured="context-rattray-marsh">Rattray Marsh</button>
+ <button data-featured="activity-active-center-240">Clarkson</button>
+ <button data-featured="activity-active-center-408">Meadowvale</button>
+ <button data-featured="hotspot-ridgeway-plaza">Ridgeway</button>
+</nav>
+<aside id="place-panel" class="glass drawer" aria-label="Place details and official programmes" hidden tabindex="-1"><div class="panel-head"><span class="eyebrow">PLACE</span><button id="close-place" class="icon" aria-label="Close place details">×</button></div><div id="place-content"></div></aside>
+<section id="browse-panel" class="glass drawer wide" aria-label="Browse official programme sample" hidden><div class="panel-head"><h2>Find your next thing</h2><button id="close-browse" class="icon" aria-label="Close programme browser">×</button></div><p class="sample-note">A snapshot of City programmes from November 8, 2026. Check the City&#39;s page for current availability.</p><input id="programme-search" type="search" placeholder="Search saved programmes…" aria-label="Filter programmes by title or venue"><div class="filter-row"><select id="schedule-filter" aria-label="Programme schedule filter"><option value="all">Any schedule evidence</option><option value="known">Captured schedule</option><option value="future">Starts on/after today</option></select><select id="fee-filter" aria-label="Programme fee filter"><option value="all">Any fee evidence</option><option value="known">Known amount only</option><option value="unknown">Fee not captured</option></select></div><div id="programme-count" role="status"></div><div id="programme-list"></div></section>
+<section id="data-panel" class="glass drawer wide" aria-label="Accessible map data list" hidden><div class="panel-head"><h2>Places & map data</h2><button id="close-data" class="icon" aria-label="Close map data">×</button></div><p class="sample-note">Everything on the map, as a searchable list.</p><input id="data-search" type="search" placeholder="Filter map records…" aria-label="Filter map records"><select id="data-category" aria-label="Map record category"><option value="places">Selected places · 77</option><option value="parks">Park boundaries · 718</option><option value="natural">Natural areas · dated 2021</option><option value="cycling-existing">Existing cycling components</option><option value="cycling-proposed">Proposed cycling components · not built</option><option value="facilities">Facility / POI records · 3,296</option></select><p id="data-count" role="status"></p><div id="data-list"></div><button id="data-more" hidden>Show next 80 records</button></section>
+<footer>
+ <span id="scale-label"></span>
+ <span id="map-credit"></span>
+ <a href="how.html">How it was made</a>
+ <a href="https://github.com/moeealii/little-mississauga">GitHub</a>
+ <button id="source-button">Sources</button>
+</footer><div id="announcement" class="sr-only" role="status" aria-live="polite"></div></main>
+<dialog id="info-dialog"><div class="panel-head"><span class="eyebrow">ABOUT</span><button id="close-info" class="icon" aria-label="Close information">×</button></div><div id="info-content"></div></dialog>
 <script type="module" src="app.js"></script></body></html>
