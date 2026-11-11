@@ -17,6 +17,8 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
+    outputs:
+      has_art: ${{ steps.art.outputs.has_art }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -34,10 +36,13 @@ jobs:
               json.loads(p.read_text(encoding='utf-8'))
           print('json ok')
           EOF
+      - name: Art release present?
+        id: art
+        run: echo "has_art=$([ -f site/art-release.json ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
 
   deploy:
     needs: check
-    if: github.ref == 'refs/heads/main' && hashFiles('site/art-release.json') != ''
+    if: github.ref == 'refs/heads/main' && needs.check.outputs.has_art == 'true'
     runs-on: ubuntu-latest
     environment:
       name: production
