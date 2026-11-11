@@ -285,7 +285,8 @@ export function createCityTraffic({index,canvas,projection,loadJSON,loadBitmap})
    while(left>1e-4){const h=Math.min(left,.08);step(routes,h,view);left-=h;}
    for(const r of routes)for(const c of r.cars)place(c);
   },
-  draw(ctx,view,scale,toScreen,night,dpr,size){
+  // `extra` (plaza life) draws parked cars and people with the same sprites, under the moving cars.
+  draw(ctx,view,scale,toScreen,night,dpr,size,extra){
    state.active=scale>=MIN_SCALE;state.visibleCars=0;state.cones=0;state.candidates=0;if(!state.active){lastDraw=null;return false;}
    const now=performance.now(),fdt=lastDraw===null?0:Math.min(.25,(now-lastDraw)/1000);lastDraw=now;
    const routes=simRoutes(view);let sim=0,stopped=0,speed=0;const cars=[];
@@ -297,12 +298,13 @@ export function createCityTraffic({index,canvas,projection,loadJSON,loadBitmap})
     if(c.alpha>.02)cars.push([c,u,v]);
    }
    Object.assign(state,{loadedTiles:[...roads.values()].filter(r=>r.status==='ready').length,simulatedCars:sim,routes:routes.length,stopped,meanSpeed:sim?+(speed/sim).toFixed(2):0,signals:[...nodes].filter(n=>n.ins.size>=3).length,visibleCars:cars.length});
-   if(!cars.length)return true;
    const k=Math.min(dpr,2),w=Math.max(1,Math.round(size[0]*k)),h=Math.max(1,Math.round(size[1]*k)),o=toScreen([0,0]),e=toScreen([1,0]),ppm=Math.hypot(e[0]-o[0],e[1]-o[1])*k;
    const bucket=Math.round(Math.log2(ppm)*4)/4,sp=2**bucket,fit=ppm/sp,nb=Math.round(Math.max(0,Math.min(1,night))*4);
    if(spriteKey!==String(bucket)){sprites.clear();spriteKey=String(bucket);}
-   cars.sort((a,b)=>b[2]-a[2]);
    const yawBucket=y=>((Math.round(y/(Math.PI*2)*YAW_STEPS)%YAW_STEPS)+YAW_STEPS)%YAW_STEPS;
+   extra?.draw({ctx,view,scale,toScreen,night,nb,k,sp,fit,carSprite,yawBucket,paints:PAINTS,maskAt:(u,v)=>maskAt(...toPx([u,v]))});
+   if(!cars.length)return true;
+   cars.sort((a,b)=>b[2]-a[2]);
    const blit=(g,s,x,y,a)=>{g.globalAlpha=a;g.drawImage(s.c,x-s.ax*fit,y-s.ay*fit,s.c.width*fit,s.c.height*fit);};
    if(nb>0){
     // Beams fall only on pavement (and dimly on ground), never on buildings.

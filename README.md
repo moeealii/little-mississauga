@@ -17,6 +17,7 @@ It is also an activity-discovery map: community centres and real programmes from
 - **One seamless canvas, not a collage.** 232 overlapping 2240 px blocks at 0.5 m/px, joint-sampled so that every overlap shares one latent and one noise field. Finished neighbours are pinned while their shared strips are regenerated. There are no visible tile edges.
 - **Real geography only.** Official LOD2 building massing (all 30 City archives), the Ontario DTM in CGVD2013 heights, and City planimetric roads, parking, water and woodland. NoData is never invented. The only exception is the Lake Ontario surface, which sits at the DTM's own shoreline elevation and only under mapped lake water.
 - **Life layers.** About 25,000 simulated cars follow the City's official street centrelines, at heights from the terrain, and disappear behind buildings using a source-aligned occlusion mask. At night their headlights throw lit cones across the pavement. Window light cells come from the source facade pass, with stable per-pane occupancy.
+- **Ridgeway Plaza.** Parked cars fill the painted stalls and little pedestrians walk between storefronts and cars, laid out from the same pavement mask. Its place panel is a restaurant roulette with filters, search, opening hours and recent spins.
 - **Time and weather.** A continuous solar clock (America/Toronto, DST-aware) and a fixed-Mississauga Open-Meteo estimate drive grading, wet streets, rain and snow. No location tracking.
 - **Deep zoom.** A multiscale WebP pyramid. The browser fetches only the tiles in view.
 
@@ -35,6 +36,8 @@ The full write-up, with numbers, is in [docs/how-it-works.md](docs/how-it-works.
 site/                 Static web app (no build step)
   app.js              Map, UI, lighting and weather wiring
   citywide-traffic.mjs  Streaming simulated traffic, occlusion and headlight cones
+  plaza-life.mjs        Simulated parked cars and pedestrians for a plaza
+  ridgeway-roulette.mjs, ridgeway.css  Restaurant roulette in the Ridgeway place panel
   map-core.mjs, projection.mjs, runtime-motion.mjs, weather.mjs, lighting/
   data/, atlas.json   Places, parks, cycling, programmes (public open data)
 pipeline/             Reference production pipeline (Python)

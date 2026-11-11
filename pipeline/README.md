@@ -10,5 +10,6 @@ These are the scripts that produced the citywide map. They are published to docu
 | Tiles | `tiles/build_pyramid.py` | Cross-faded mosaic, boundary alpha, the WebP deep-zoom pyramid, and the road/occlusion and window-light masks. |
 | | `tiles/assemble_site.py` | Assembles the deployable site from the app, the tiles and the manifest. |
 | Life | `life/build_roads.py` | Official street centrelines become right-hand lanes with terrain heights, in 1 km streaming tiles. |
+| | `life/build_plaza.py` | Parking stalls, parked cars and a pedestrian walk grid for one plaza, from the published mask and lane tiles. Runs standalone. |
 
 Set `MISSISSAUGA_ROOT` to the working tree before running.
