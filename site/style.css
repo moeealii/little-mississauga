@@ -114,6 +114,8 @@ footer a:hover,footer button:hover{text-decoration:underline;background:none}
 #place-content>p{font-size:13px;color:var(--muted);margin:8px 0 14px}
 .place-meta{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding:10px 0}
 .programme-group{font-size:13px;margin:16px 0 8px}
+#place-programme-search{width:100%;font-size:13px;margin-bottom:4px}
+#place-programmes-more{text-align:center;color:var(--accent);font-weight:600}
 .programme-card{padding:13px 0;border-bottom:1px solid var(--line)}
 .programme-card h3{font-size:14px;margin-bottom:4px}
 .programme-card p{font-size:12px;color:var(--muted);margin:3px 0}

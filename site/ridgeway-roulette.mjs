@@ -1,8 +1,9 @@
 // Ridgeway Roulette inside the map's place drawer: a no-build port of the React app at
 // ridgeway.thealifamily.ca. The pure logic below (filters, opening hours, spin maths, slang)
 // follows that app's lib.ts line for line; only the rendering is rewritten for plain DOM.
-// Restaurant data is a dated snapshot in data/ridgeway-restaurants.json. Filters and recent
-// spins stay in this browser's localStorage; nothing is sent anywhere.
+// The restaurant list is read live from the Ridgeway Roulette site and kept in this browser for a
+// day; data/ridgeway-restaurants.json is the saved copy used when that is unreachable. Filters and
+// recent spins stay in this browser's localStorage; nothing is sent anywhere.
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const href=v=>{try{const u=new URL(v);return u.protocol==='https:'||u.protocol==='http:'?u.href:null;}catch{return null;}};
 
@@ -19,7 +20,23 @@ export function mapRecords(data){
 }
 
 // ---- logic (lib.ts) -----------------------------------------------------------------------
-const LS_HISTORY_KEY='sauga_ridgeway_history_v1',LS_FILTERS_KEY='sauga_ridgeway_filters_v1';
+const LS_HISTORY_KEY='sauga_ridgeway_history_v1',LS_FILTERS_KEY='sauga_ridgeway_filters_v1',LS_LIST_KEY='sauga_ridgeway_list_v1';
+const LIVE_URL='https://ridgeway.thealifamily.ca/api/records',LIVE_SITE='https://ridgeway.thealifamily.ca/',DAY_MS=864e5;
+// Today's list: this browser's copy if it is under a day old, else the live site, else the last
+// copy we had, else the snapshot shipped with the map.
+async function loadList(snapshotUrl){
+ const cached=load(LS_LIST_KEY,()=>null),fresh=cached&&Array.isArray(cached.restaurants)&&cached.restaurants.length&&Date.now()-cached.at<DAY_MS;
+ if(fresh)return {restaurants:cached.restaurants,label:'Live list, checked '+new Date(cached.at).toLocaleDateString('en-CA',{month:'short',day:'numeric'})};
+ try{
+  const r=await fetch(LIVE_URL,{signal:AbortSignal.timeout(7000)});if(!r.ok)throw Error('unavailable');
+  const restaurants=mapRecords(await r.json());if(!restaurants.length)throw Error('empty');
+  save(LS_LIST_KEY,{at:Date.now(),restaurants});return {restaurants,label:'Live list, checked just now'};
+ }catch{
+  if(cached&&Array.isArray(cached.restaurants)&&cached.restaurants.length)return {restaurants:cached.restaurants,label:'List from '+new Date(cached.at).toLocaleDateString('en-CA',{month:'short',day:'numeric'})};
+  const r=await fetch(snapshotUrl);if(!r.ok)throw Error('unavailable');const d=await r.json();
+  return {restaurants:mapRecords(d),label:'List saved '+d.saved_at};
+ }
+}
 const WHEEL_COLORS=['#c44d3e','#e0915e','#d4a04c','#8b9d5e','#6b8e9b','#a85a6e','#c4844f','#7a8b5e'];
 const wheelColor=i=>WHEEL_COLORS[i%WHEEL_COLORS.length]??WHEEL_COLORS[0];
 const DEFAULT_FILTERS=()=>({vibe:'All',minRating:null,ratingSource:'my',openOnly:false});
@@ -174,7 +191,7 @@ function renderChrome(){
  $('[data-rr=filters]').hidden=!S.filtersOpen||S.loading;$('[data-rr=search]').hidden=!S.searchOpen||S.loading;
  const spinBtn=root.querySelector('[data-act=spin]');spinBtn.disabled=S.spinning||S.loading||filteredCache.length===0;spinBtn.dataset.spinning=S.spinning;spinBtn.textContent=S.loading||S.spinning?'...':'spin';spinBtn.style.setProperty('--rr-spin-accent',wheelColor(S.spinCount));
  $('[data-rr=none]').hidden=S.loading||filteredCache.length>0;
- $('[data-rr=foot]').innerHTML=S.snapshot?`List saved ${esc(S.snapshot.saved_at)} · hours and ratings can change · <a href="${esc(href(S.snapshot.source)||'#')}" target="_blank" rel="noopener noreferrer">full Ridgeway Roulette ↗</a>`:'';
+ $('[data-rr=foot]').innerHTML=S.snapshot?`${esc(S.snapshot)} · hours and ratings can change · <a href="${LIVE_SITE}" target="_blank" rel="noopener noreferrer">full Ridgeway Roulette ↗</a>`:'';
 }
 function renderSearch(){
  const hits=searchRestaurants(S.restaurants,S.searchQuery);
@@ -251,5 +268,5 @@ export function mountRidgewayRoulette(container,options={}){
   if(!Array.isArray(S.history))S.history=[];
  }
  container.append(root);renderChrome();renderFilters();renderWheel();renderHistory();
- if(!started){started=true;fetch(options.url||'data/ridgeway-restaurants.json').then(r=>{if(!r.ok)throw Error('unavailable');return r.json();}).then(d=>{S.snapshot={saved_at:d.saved_at,source:d.source};S.restaurants=mapRecords(d);}).catch(()=>{S.error=true;}).finally(()=>{S.loading=false;changed();renderSearch();renderHistory();});}
+ if(!started){started=true;loadList(options.url||'data/ridgeway-restaurants.json').then(d=>{S.snapshot=d.label;S.restaurants=d.restaurants;}).catch(()=>{S.error=true;}).finally(()=>{S.loading=false;changed();renderSearch();renderHistory();});}
 }
