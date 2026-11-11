@@ -1,0 +1,45 @@
+LITTLE MISSISSAUGA · LOCAL CONTINUOUS-MAP CANDIDATE
+Independent noncommercial research and evaluation demonstration
+Not deployed. This notice describes the local candidate, not a change to the public site.
+
+BUILT WITH QWEN
+Qwen is licensed under the Qwen RESEARCH LICENSE AGREEMENT, Copyright (c) 2026 Hangzhou Tongyi Laboratory Technology Co., Ltd. All Rights Reserved.
+
+This candidate contains municipal source-data overlays and a fail-closed registered-artwork input contract. No model artwork is accepted merely by building this frontend. Future accepted pre-rendered Qwen research output must carry its actual identity and licence. No weights, model service, inference API, model download or monetization are provided. This is not a commercial licence grant. The Qwen research licence is included verbatim in LICENSE-QWEN.txt.
+Pinned source licence:
+https://huggingface.co/AcademiaSD/Qwen-Image-2.1-NF4-for-LoRA-Training/blob/e94eadc50e3831dee9f33e34ed63bdabb56fa175/LICENSE
+
+MODIFICATIONS AND ART PROVENANCE
+The earlier gallery contains historical source, teacher and model comparisons; they are not adjoining city coverage and are not imported as the continuous map. The new joint-canvas GPU output is diagnostic only until its separate architectural and coverage audit clears it. Every visible canvas requires explicit visual and coverage acceptance, same-frame provenance and native-resolution placement. No model training or inference is performed by this frontend.
+
+ARTIFACTS AND LIMITS
+Illustrative model output is not certified geography, a survey, a seamless 3D reconstruction, a navigational or trail-safety map, live traffic, or current venue occupancy. All current City Hall AI variants are withheld pending the clock-tower and iconic-architecture source/teacher/model audit, not just strength 0.8. Generated buildings, roofs, water edges and small objects can be wrong. A diagnostic result or a file hash is not architectural acceptance. No unrelated historical teacher plates are smeared into artificial full-city coverage.
+
+CITY OF MISSISSAUGA SOURCE CREDIT
+Geographic source information includes City of Mississauga open data: official municipal boundary, LOD2 building massing, street centrelines, planimetric surfaces, facility records and points of interest. Artistic facade colours, vegetation, parked vehicles and decorative detail are illustrative, not surveyed inventories. Source data may be older than its retrieval date and is not survey-grade.
+https://www.mississauga.ca/our-organization/data-and-maps/open-data-catalogue/
+https://www.mississauga.ca/publication/open-data-program-policy/
+https://www.mississauga.ca/home/privacy-and-terms/
+https://www.mississauga.ca/file/COM/CityOfMississaugaTermsOfUse.pdf
+
+TERRAIN AND NATURE CONTEXT
+Source-backed terrain uses Ontario primary DTM (Lidar-Derived), CGVD2013 common reference; no Mapzen or unknown-datum pixels in this staging frame. Contains information licensed under the Open Government Licence – Ontario. https://www.ontario.ca/page/open-government-licence-ontario
+Official Rattray Marsh visitor information:
+https://cvc.ca/discover-our-parks/rattray-marsh/
+
+PROGRAMME SOURCE CREDIT AND FRESHNESS
+Active Mississauga / City of Mississauga programme information is a saved public snapshot checked November 8, 2026. The sample contains 133 unique activity records; only 20 have detailed list facts and the rest are partial map teasers. It is not the complete catalogue and not a live availability feed. Unknown fees, ages, schedules and availability remain unknown, not free or available. Listings and enrollment links do not establish eligibility. The City's current detail page is authoritative for current facts.
+https://anc.ca.apm.activecommunities.com/activemississauga/activity/search?onlineSiteId=0&activity_select_param=2&viewMode=map
+
+This demonstration does not create accounts, collect participant or payment information, enroll users, add items to carts, accept City consent, or process payment. Registration and final checks remain entirely on the official site.
+
+NO ENDORSEMENT
+This is an independent research project, not an official City product. The City of Mississauga, Active Network, Qwen's publisher and other source providers have not endorsed or certified this demonstration. Provider names are used only for factual source attribution. No Toronto-map or game assets are copied.
+
+Candidate continuous map, not deployed. Map overlays: City of Mississauga Park Boundary (reported edit 2024-08-21), dated 2021 Natural Area System/linkage/special management (reported edit 2022-06-29), CyclingNetwork (reported edit 2026-11-01), captured 2026-11-09. Source-qualified components remain separate; proposed is not built, natural linkage is not a trail, and access/closures are unknown. Licence-unresolved pedestrian network and restricted 2024 NAS are not included. City Terms: https://www.mississauga.ca/file/COM/CityOfMississaugaTermsOfUse.pdf
+Lighting software adapted from MIT-licensed Isometric Toronto. See lighting/LICENSE-TORONTO.txt. No Toronto artwork or light inventories are included. Emission requires caller-supplied registered RGB masks; missing masks emit nothing. Window occupancy is illustrative, not observed household activity.
+Terrain attribution: Contains information licensed under the Open Government Licence – Ontario. Ontario primary DTM/CGVD2013 common reference; only the actual verified field footprint is source-backed, not citywide surveyed relief.
+
+WEATHER DATA: Open-Meteo https://open-meteo.com/ , CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ . Fixed Mississauga coordinates only. Current model estimate, not observed local conditions or a safety forecast. Memory cache, explicit model timestamp/stale state; no user geolocation, paid key or account. Atmospheric cloud/rain/snow treatment is illustrative and applied only to accepted visible artwork. Time previews retain current weather, not historical observations. No image generation per weather/time change.
+
+STAGED FRESH MODEL STATUS: actual-model-verified. Actual model/hash provenance verified; only individually reviewed output tiles appear. No weights, source meshes, private reference artwork, credentials or private receipts are bundled.

@@ -1,0 +1,89 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+    paths: ['site/**', 'scripts/**', '.github/workflows/deploy.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Syntax-check modules
+        run: |
+          for f in site/*.mjs site/lighting/*.mjs; do node --check "$f"; done
+          cp site/app.js /tmp/app.mjs && node --check /tmp/app.mjs
+      - name: Validate JSON
+        run: |
+          python3 - <<'EOF'
+          import json, pathlib
+          for p in pathlib.Path('site').rglob('*.json'):
+              json.loads(p.read_text(encoding='utf-8'))
+          print('json ok')
+          EOF
+
+  deploy:
+    needs: check
+    if: github.ref == 'refs/heads/main' && hashFiles('site/art-release.json') != ''
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ vars.SITE_URL }}
+    env:
+      BUCKET: ${{ vars.SITE_BUCKET }}
+      DISTRIBUTION: ${{ vars.DISTRIBUTION_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Build immutable release
+        run: |
+          REL="releases/gh-${GITHUB_SHA::12}"
+          ART="$(jq -r .prefix site/art-release.json)"
+          echo "REL=$REL" >> "$GITHUB_ENV"
+          # Generated artwork tiles live in the private art store; copy server-side.
+          aws s3 sync "s3://$BUCKET/$ART/" "s3://$BUCKET/$REL/" --only-show-errors
+          # App code and data.
+          aws s3 sync site/ "s3://$BUCKET/$REL/" --only-show-errors \
+            --exclude 'art-release.json' --exclude '*.mjs' --exclude 'index.html' \
+            --cache-control 'public,max-age=300'
+          # ES modules must be served as JavaScript.
+          aws s3 cp site/ "s3://$BUCKET/$REL/" --recursive --only-show-errors \
+            --exclude '*' --include '*.mjs' --content-type 'text/javascript' --cache-control 'public,max-age=300'
+          aws s3 cp site/index.html "s3://$BUCKET/$REL/index.html" --only-show-errors \
+            --content-type 'text/html; charset=utf-8' --cache-control 'no-cache'
+
+      - name: Switch CloudFront origin
+        run: python3 scripts/switch_origin.py --distribution "$DISTRIBUTION" --origin-path "/$REL"
+
+      - name: Invalidate and wait
+        run: |
+          ID=$(aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION" --paths '/*' --query Invalidation.Id --output text)
+          aws cloudfront wait invalidation-completed --distribution-id "$DISTRIBUTION" --id "$ID"
+
+      - name: Smoke test live site
+        run: |
+          curl -fsS "${{ vars.SITE_URL }}/" -o /dev/null
+          for f in city-manifest.json app.js citywide-traffic.mjs; do
+            remote=$(curl -fsS "${{ vars.SITE_URL }}/$f" | sha256sum | cut -d' ' -f1)
+            local=$(sha256sum "site/$f" | cut -d' ' -f1)
+            [ "$remote" = "$local" ] || { echo "hash mismatch: $f"; exit 1; }
+          done
+          echo "Live: ${{ vars.SITE_URL }} -> $REL"

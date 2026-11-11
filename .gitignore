@@ -1,0 +1,10 @@
+# Generated artwork lives in the private art store, not git.
+site/art/
+*.safetensors
+*.ckpt
+.env
+.aws/
+__pycache__/
+*.pyc
+node_modules/
+.DS_Store
