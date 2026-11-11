@@ -14,7 +14,7 @@ It is also an activity-discovery map: community centres and real programmes from
 
 ## Highlights
 
-- **One seamless canvas, not a collage.** 228 overlapping 2240 px blocks at 0.5 m/px, joint-sampled so that every overlap shares one latent and one noise field. Finished neighbours are pinned while their shared strips are regenerated. There are no visible tile edges.
+- **One seamless canvas, not a collage.** 232 overlapping 2240 px blocks at 0.5 m/px, joint-sampled so that every overlap shares one latent and one noise field. Finished neighbours are pinned while their shared strips are regenerated. There are no visible tile edges.
 - **Real geography only.** Official LOD2 building massing (all 30 City archives), the Ontario DTM in CGVD2013 heights, and City planimetric roads, parking, water and woodland. NoData is never invented. The only exception is the Lake Ontario surface, which sits at the DTM's own shoreline elevation and only under mapped lake water.
 - **Life layers.** About 25,000 simulated cars follow the City's official street centrelines, at heights from the terrain, and disappear behind buildings using a source-aligned occlusion mask. At night their headlights throw lit cones across the pavement. Window light cells come from the source facade pass, with stable per-pane occupancy.
 - **Time and weather.** A continuous solar clock (America/Toronto, DST-aware) and a fixed-Mississauga Open-Meteo estimate drive grading, wet streets, rain and snow. No location tracking.
@@ -64,7 +64,7 @@ Rolling back means re-pointing the origin at a previous release prefix (`scripts
 ## Honest limits
 
 - The artwork is illustrative, not survey-grade. Building bases, bridge decks and engineered road grades are not verified.
-- Four City Centre blocks are held pending a landmark-identity review. Individually reviewed City Hall and Absolute World canvases are shown there instead.
+- City Centre uses the City's attributed building records. Unattributed detailed duplicates and a proposed-development massing in the source archive were reviewed and excluded, and the Civic Centre uses its verified detailed model.
 - Traffic is simulated ambience, not live traffic. Window lights are inferred cells, not real occupancy.
 - Programme data is a dated partial sample. The City's pages are authoritative.
 

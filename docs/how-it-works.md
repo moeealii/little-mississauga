@@ -16,15 +16,14 @@ The map plane is sampled at **0.5 m/px**, which matches the scale the style mode
 
 For each block:
 
-- **Buildings:** the City's published LOD2 massing archives. All 30 tiles are used, with verified fixes for duplicated landmark representations (for example, Absolute World is kept as its true curved form).
+- **Buildings:** the City's published LOD2 massing archives. All 30 tiles are used, with verified fixes for duplicated landmark representations (for example, Absolute World is kept as its true curved form, and unattributed City Centre duplicates and a proposed 230 m massing are excluded).
 - **Terrain:** the Ontario Digital Terrain Model at 0.5 m resolution, on a shared 12.5 m lattice. Any block with NoData is held rather than filled. Along the lakeshore, only DTM NoData that is connected to mapped Lake Ontario water is set to the DTM's own shoreline elevation (74.03 m). Any other gap still holds the block.
 - **Surfaces:** City planimetric roads, parking, rivers, shoreline and woodland.
 
 A headless browser (SwiftShader, so captures are deterministic) renders three passes per block: the source scene, a semantic mask (roads and parking), and a facade/roof pass.
 
 Final source coverage:
-- **228 of 241** blocks;
-- **4** City Centre blocks held for an unresolved landmark-identity review;
+- **232 of 241** blocks;
 - **9** boundary slivers with no buildings at all.
 
 ## 3. The style model
@@ -57,17 +56,18 @@ The citywide run uses **base20** with batched windows and per-window prefix KV c
 ## 5. Tiles, traffic and light
 
 - **Mosaic:** blocks are cross-faded across their overlaps, clipped to the official city boundary, and cut into 512 px WebP tiles at every zoom level. The browser loads only the tiles in view.
-- **Traffic:** about 25,000 simulated cars drive the City's official OPEN street centrelines (19,765 segments, giving 28,730 lanes), with heights from the same DTM. A car is drawn only where its centre is on pavement and no building pixel covers it. At night, headlight cones are blended additively onto pavement, with a half-strength spill onto verges. 1,174 bridge and underpass segments are withheld, because there are no deck heights.
+- **Traffic:** simulated cars drive the City's official OPEN street centrelines (19,765 segments, giving 28,730 lanes), with heights from the same DTM. Lanes are joined into a graph at load time, so cars cross intersections, turn, follow each other (Intelligent Driver Model, with driver constants from Slop Toronto's MIT-licensed traffic code) and take turns at busy junctions. Lane counts and speeds come from the painted pavement width. Buildings hide cars pixel by pixel. At night, cars show tail lights and short headlight beams on pavement. 1,174 bridge and underpass segments are withheld, because there are no deck heights.
 - **Windows:** facade pixels where the generated art paints a darker pane become whole rectangular light cells. Each has a stable lit-threshold hashed from its map position, so occupancy rises smoothly through the evening.
 - **Sky:** a DST-aware solar clock for Toronto, plus a fixed-Mississauga Open-Meteo estimate, refreshed at most every 15 minutes. Stale data falls back to neutral rather than guessed weather.
 
 ## 6. Cost
 
 - **GPU:** AWS g7e.2xlarge (RTX PRO 6000 96 GB), on demand at $3.36/h.
-- **Total:** about **$31** for this phase:
+- **Total:** about **$32** for this phase:
   - **$2.80** for the canary;
   - **$25** for the main 210-block run (3h 40m of generation, then idle until its automatic cutoff);
-  - **$2.70** for the 18 lakeshore blocks, including one failed start.
+  - **$2.70** for the 18 lakeshore blocks, including one failed start;
+  - **$0.80** for the 4 City Centre blocks, after a landmark audit of the source buildings.
 - **Guards:** each lease has an independent EventBridge termination schedule and is cleaned up with its root disk deleted.
 
 ## 7. Deployment
