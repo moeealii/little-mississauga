@@ -6,13 +6,15 @@
 
 ![Little Mississauga at night: headlights, lit windows and simulated traffic](docs/images/hero-night.png)
 
+![Daytime over the Credit River valley](docs/images/day.png)
+
 Every building is the City's own published 3D massing model. Every hill is the Province's lidar-derived terrain. Every road, parking lot, creek and woodlot is a municipal map polygon. A fine-tuned Qwen-Image adapter repaints that geometry as one continuous miniature city. Then the browser brings it to life: the sun follows real Toronto time, the weather comes from a live forecast feed, windows light up at dusk, and simulated traffic drives the real street network with headlights on at night.
 
 It is also an activity-discovery map: community centres and real programmes from Active Mississauga, linking out to the City's own registration pages.
 
 ## Highlights
 
-- **One seamless canvas, not a collage.** About 230 overlapping 2240 px blocks at 0.5 m/px, joint-sampled so that every overlap shares one latent and one noise field. Finished neighbours are pinned while their shared strips are regenerated. There are no visible tile edges.
+- **One seamless canvas, not a collage.** 228 overlapping 2240 px blocks at 0.5 m/px, joint-sampled so that every overlap shares one latent and one noise field. Finished neighbours are pinned while their shared strips are regenerated. There are no visible tile edges.
 - **Real geography only.** Official LOD2 building massing (all 30 City archives), the Ontario DTM in CGVD2013 heights, and City planimetric roads, parking, water and woodland. NoData is never invented. The only exception is the Lake Ontario surface, which sits at the DTM's own shoreline elevation and only under mapped lake water.
 - **Life layers.** About 25,000 simulated cars follow the City's official street centrelines, at heights from the terrain, and disappear behind buildings using a source-aligned occlusion mask. At night their headlights throw lit cones across the pavement. Window light cells come from the source facade pass, with stable per-pane occupancy.
 - **Time and weather.** A continuous solar clock (America/Toronto, DST-aware) and a fixed-Mississauga Open-Meteo estimate drive grading, wet streets, rain and snow. No location tracking.

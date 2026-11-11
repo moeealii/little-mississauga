@@ -1,6 +1,6 @@
 # How Little Mississauga was made
 
-This is the full pipeline, with real numbers. All costs are actual cloud lease time, not estimates.
+This is the full pipeline, with real numbers. Costs are computed from each lease's actual running time at the on-demand rate.
 
 ## 1. One frame for the whole city
 
@@ -64,7 +64,10 @@ The citywide run uses **base20** with batched windows and per-window prefix KV c
 ## 6. Cost
 
 - **GPU:** AWS g7e.2xlarge (RTX PRO 6000 96 GB), on demand at $3.36/h.
-- **Total:** about **$20** for this phase, covering the canary and both production leases.
+- **Total:** about **$31** for this phase:
+  - **$2.80** for the canary;
+  - **$25** for the main 210-block run (3h 40m of generation, then idle until its automatic cutoff);
+  - **$2.70** for the 18 lakeshore blocks, including one failed start.
 - **Guards:** each lease has an independent EventBridge termination schedule and is cleaned up with its root disk deleted.
 
 ## 7. Deployment

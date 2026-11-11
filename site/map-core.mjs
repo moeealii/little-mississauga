@@ -33,7 +33,7 @@ export function validateManifest(m){
   if(Math.abs((c.projected_rect_m[2]-c.projected_rect_m[0])/(c.projected_rect_m[3]-c.projected_rect_m[1])-c.pixels[0]/c.pixels[1])>1e-6)throw Error('Canvas aspect does not match the canonical image-plane placement');
   const levelIds=new Set();
   for(const l of c.levels){
-   if(!l.id||levelIds.has(l.id)||!pixels(l.pixels)||!Array.isArray(l.tiles)||!l.tiles.length||l.pixels[0]>c.pixels[0]||l.pixels[1]>c.pixels[1]||Math.abs(l.pixels[0]/l.pixels[1]-c.pixels[0]/c.pixels[1])>1e-6)throw Error('Invalid registered level');levelIds.add(l.id);
+   if(!l.id||levelIds.has(l.id)||!pixels(l.pixels)||!Array.isArray(l.tiles)||!l.tiles.length||l.pixels[0]>c.pixels[0]||l.pixels[1]>c.pixels[1]||Math.abs(l.pixels[0]/l.pixels[1]-c.pixels[0]/c.pixels[1])>2/l.pixels[1])throw Error('Invalid registered level');levelIds.add(l.id);
    const tileIds=new Set();
    for(const t of l.tiles){
     if(!t.id||tileIds.has(t.id)||!rect(t.rect_px)||!t.rect_px.every(Number.isInteger)||t.rect_px[0]<0||t.rect_px[1]<0||t.rect_px[2]>l.pixels[0]||t.rect_px[3]>l.pixels[1]||!asset(t.base))throw Error('Invalid registered tile');tileIds.add(t.id);
